@@ -54,7 +54,7 @@ wavehdr create_wave_hdr(int32_t num_samples)
 {
 
 	int32_t subchunk1size = 16;
-	int32_t subchunk2size = num_samples * (int32_t)(num_channels * bits_per_sample / 8);
+	int32_t subchunk2size = num_samples * (int32_t)((bits_per_sample / 8));
 
 	wavehdr wheadr;
 	wheadr.chunkid[0] = 'R';
@@ -80,7 +80,7 @@ wavehdr create_wave_hdr(int32_t num_samples)
 
 	wheadr.numchannels = num_channels;
 	wheadr.samplerate  = sample_rate;
-	wheadr.byterate = sample_rate * num_channels * bits_per_sample / 8;
+	wheadr.byterate = sample_rate * num_channels * (bits_per_sample / 8);
 	wheadr.blockalign = num_channels * bits_per_sample / 8;
 
 	wheadr.bitspersample = bits_per_sample;
@@ -144,7 +144,19 @@ int16_t* wave_samples(FILE* inpf, int32_t* nsamples)
 	wavehdr wheadr;
 	fread(&wheadr, sizeof(wavehdr), 1, inpf);
 
-	*nsamples = wheadr.subchunk2size / (num_channels * (bits_per_sample / 8));
+	printf("number samples %d\n", *nsamples);
+	printf("bits per sample %d\n", wheadr.bitspersample);
+	printf("sample rate %d\n", wheadr.samplerate);
+	printf("byte rate %d\n", wheadr.byterate);
+	printf("block align %d\n", wheadr.blockalign);
+	printf("subchunk1size %d\n", wheadr.subchunk1size);
+	printf("subchunk2size %d\n", wheadr.subchunk2size);
+
+	*nsamples = wheadr.subchunk2size / (wheadr.numchannels * (wheadr.bitspersample / bits_per_sample));
+
+	// fseek(inpf, 0, SEEK_END);
+	// int32_t fsize = ftell(inpf);
+	// fseek(inpf, 0, SEEK_SET);
 
 	int16_t* samples = (int16_t*) calloc(sizeof(int16_t), *nsamples);
 
@@ -182,7 +194,7 @@ int main(void)
 
 	// while (c < nsamples) {
 
-	// 	sample = (int16_t)(sin(t) * max_positive_vol);
+	// 	sample = (int16_t)(sin(t) * 32767);
 
 	// 	t += 0.02;
 
@@ -213,7 +225,7 @@ int main(void)
 
 	int16_t* samples = wave_samples(inpf, &nsamples);
 
-	FILE* fout = fopen("test.wav", "wb");
+	FILE* fout = fopen("out.wav", "wb");
 
 	wave(nsamples, samples, fout);
 
