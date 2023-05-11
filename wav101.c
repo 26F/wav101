@@ -119,7 +119,6 @@ int16_t* wave_samples(FILE* inpf, int32_t* nsamples)
 	wavehdr wheadr;
 	fread(&wheadr, sizeof(wavehdr), 1, inpf);
 
-	printf("number samples %d\n", *nsamples);
 	printf("bits per sample %d\n", wheadr.bitspersample);
 	printf("sample rate %d\n", wheadr.samplerate);
 	printf("byte rate %d\n", wheadr.byterate);
