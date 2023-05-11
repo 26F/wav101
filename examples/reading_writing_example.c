@@ -5,7 +5,7 @@
 
 #include "wav101.h"
 
-int main(void)
+int main(int argc, char** argv)
 {
 
 	/*
@@ -13,9 +13,18 @@ int main(void)
 	wave file must be 16-bit PC (stereo) with 
 	sample rate of 44100.
 
+	32bit wave files are not supported.
+
 	*/
 
-	FILE* inpf = fopen("testwav.wav", "rb");
+	if (argc < 2) {
+
+		printf("use: ./a.out mywav.wav\n");
+		return 0;
+
+	}
+
+	FILE* inpf = fopen(argv[1], "rb");
 
 	int32_t nsamples;
 
@@ -28,6 +37,7 @@ int main(void)
 	free(samples);
 
 	fclose(inpf);
+	fclose(fout);
 
 	return 0;
 }
